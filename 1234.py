@@ -161,3 +161,29 @@ comparison = pd.DataFrame({  # создание DataFrame сравнения
 })
 
 st.bar_chart(comparison)  # отображение столбчатой диаграммы
+
+from sklearn.neighbors import NearestNeighbors
+
+st.divider()
+st.subheader("🏆 Similar Houses Finder")
+
+nn = NearestNeighbors(n_neighbors=5)
+nn.fit(X)
+
+distances, indices = nn.kneighbors(df)
+
+similar_houses = X.iloc[indices[0]]
+similar_houses["PRICE"] = y.iloc[indices[0]].values
+
+st.write("🔎 Houses most similar to yours:")
+
+st.dataframe(similar_houses)
+
+fig_sim, ax_sim = plt.subplots()
+ax_sim.bar(
+    ["Your Prediction"] + [f"House {i}" for i in range(1,5)],
+    [price] + list(similar_houses["PRICE"] * 100000)
+)
+
+ax_sim.set_ylabel("Price ($)")
+st.pyplot(fig_sim)
